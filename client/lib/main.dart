@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +15,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:house_worker/models/task.dart';
 import 'package:house_worker/models/user.dart';
 import 'package:house_worker/models/household.dart';
+import 'package:logging/logging.dart';
+
+// ロガーの設定
+final logger = Logger('HouseWorker');
 
 // Isarインスタンスのプロバイダー
 final isarProvider = Provider<Isar>((ref) => throw UnimplementedError());
@@ -35,7 +38,7 @@ Future<String> getEmulatorHost() async {
     final Map<String, dynamic> config = json.decode(configJson);
     return config['emulator_host'] ?? 'localhost';
   } catch (e) {
-    print('エミュレーター設定の読み込みに失敗しました: $e');
+    logger.warning('エミュレーター設定の読み込みに失敗しました: $e');
     // デフォルト値を返す
     return 'localhost';
   }
@@ -50,6 +53,11 @@ void setupFirebaseEmulators(String host) {
 }
 
 void main() async {
+  // ロガーの初期化
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+  });
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
@@ -57,17 +65,17 @@ void main() async {
     await Firebase.initializeApp(
       // options: DefaultFirebaseOptions.currentPlatform, // firebase_options.dart が生成されたらコメントを外す
     );
-    print('Firebase initialized successfully');
+    logger.info('Firebase initialized successfully');
 
     // エミュレーターのホスト情報を取得
     final emulatorHost = await getEmulatorHost();
-    print('エミュレーターホスト: $emulatorHost');
+    logger.info('エミュレーターホスト: $emulatorHost');
 
     // エミュレーターの設定を適用
     setupFirebaseEmulators(emulatorHost);
-    print('Firebase Emulator設定を適用しました');
+    logger.info('Firebase Emulator設定を適用しました');
   } catch (e) {
-    print('Failed to initialize Firebase: $e');
+    logger.severe('Failed to initialize Firebase: $e');
     // Firebase が初期化できなくても、アプリを続行する
   }
 

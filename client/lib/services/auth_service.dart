@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:house_worker/models/user.dart' as app_user;
 import 'package:house_worker/repositories/user_repository.dart';
+import 'package:logging/logging.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   final userRepository = ref.watch(userRepositoryProvider);
@@ -15,6 +16,7 @@ final authStateProvider = StreamProvider<firebase_auth.User?>((ref) {
 class AuthService {
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final UserRepository _userRepository;
+  final Logger _logger = Logger('AuthService');
 
   AuthService(this._firebaseAuth, this._userRepository);
 
@@ -43,7 +45,7 @@ class AuthService {
         }
       }
     } catch (e) {
-      print('匿名サインインに失敗しました: $e');
+      _logger.warning('匿名サインインに失敗しました: $e');
       rethrow;
     }
   }
