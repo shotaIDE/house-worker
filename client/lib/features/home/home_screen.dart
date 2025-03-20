@@ -4,6 +4,7 @@ import 'package:house_worker/features/home/task_log_add_screen.dart';
 import 'package:house_worker/features/home/task_log_detail_screen.dart';
 import 'package:house_worker/features/home/task_log_item.dart';
 import 'package:house_worker/features/home/task_log_provider.dart';
+import 'package:house_worker/features/settings/settings_screen.dart';
 import 'package:house_worker/services/auth_service.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -21,6 +22,14 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('家事ログ一覧'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
